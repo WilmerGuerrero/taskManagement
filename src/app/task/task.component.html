@@ -1,0 +1,24 @@
+<div class="container">
+    <div class="row">
+      <div class="col-12">
+        <button class="btn-success" (click)="addTask()">Agregar
+        </button>
+      </div>
+    </div>
+    <div *ngFor="let task of tasks">
+      <div class="row">
+              <div class="col-6">
+                {{task.name}}
+              </div>
+              <div class="col-3">
+                <button class="button" (click)="onDelete()">Eliminar</button>
+              </div>
+              <div class="col-3" *ngIf="task.completed; else availableToUpdate"> 
+                <button class="btn-info">Completado</button>
+              </div>
+              <div class="col-3" #availableToUpdate> 
+                <button class="btn-red" (click)="onComplete()">Completa</button>
+              </div>
+            </div>
+    </div>
+  </div>

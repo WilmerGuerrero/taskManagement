@@ -1,5 +1,5 @@
 import { ApiMethodsService } from './../services/api-methods.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { TaskModel } from '../models/taskModel';
 
 @Component({
@@ -9,38 +9,57 @@ import { TaskModel } from '../models/taskModel';
   ]
 })
 export class TaskComponent implements OnInit {
-
+  @Input() complete:boolean;
   tasks:TaskModel[]=[];
   constructor(private _httpService:ApiMethodsService) { 
   }
   
   ngOnInit(): void {
-    setTimeout(()=>{},1000)
-    this._httpService.getAll();
+    this.getAll();
     this._httpService.getTasks();
     this.tasks=this._httpService.tasks;
-    console.log(this.tasks)
+ 
   }
 
   getAll(){
-    this.tasks=this._httpService.getAll()
+    this._httpService.getAll().subscribe((response)=>{
+      if(response){
+        this.tasks=response;
+        console.log(this.tasks)
+      }
+    },(error)=>{
+      console.log(error)
+    })
   }
 
   getById(id:number){
-    this._httpService.getById(id);
+    this._httpService.getById(id).subscribe((response)=>{
+      if(response)
+          return response;
+    });
   }
 
   addTask(){
-    this._httpService.add();
+    this._httpService.add().subscribe((response)=>{
+      this.tasks.unshift(response);
+    });
   }
-  update(id:number,value:TaskModel){
-    this._httpService.update(id,value);
-    this.getAll();
+  completeTask(id:number){
+    this._httpService.update(id).subscribe(()=>{
+      let item =this.tasks.find(x=>x.id==id).completed;
+      if(item==true){
+        this.tasks.find(x=>x.id==id).completed=false;
+      }else{
+        this.tasks.find(x=>x.id==id).completed=true;
+      }
+    });
   }
 
-  onDelete(id:number){
-    this._httpService.delete(id);
-    this.getAll();
+  deleteTask(id:number){
+    this._httpService.delete(id).subscribe((response)=>{
+      let newTaskList = this.tasks.filter(x=>x.id!==id);
+      this.tasks=newTaskList;
+    });;
   }
 
 }

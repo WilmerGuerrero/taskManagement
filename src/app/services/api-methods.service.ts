@@ -2,6 +2,7 @@ import { TaskModel } from './../models/taskModel';
 import { environment } from './../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -15,38 +16,24 @@ export class ApiMethodsService {
   getTasks(){
     return this.tasks;
   }
-  getAll():any{
-    this._httpClient.get<any>(`${this.route}/task-list`).subscribe((response)=>{
-      if(!response.error){
-        this.tasks=response;
-        return response;
-      }
-      else
-        throw new console.error();
-         ; 
-    })
+  getAll():Observable<TaskModel[]>{
+    return this._httpClient.get<TaskModel[]>(`${this.route}/task-list`);
   }
 
-  getById(id:number){
-    this._httpClient.get<TaskModel>(`${this.route}/task-list/${id}`).subscribe((response)=>{
-      if(response)
-          return response;
-    })
+  getById(id:number):Observable<TaskModel>{
+    return this._httpClient.get<TaskModel>(`${this.route}/task-list/${id}`)
   }
 
-  add(){
+  add():Observable<TaskModel>{
     let newValue:TaskModel= {id:0,name:"Nueva tarea", completed:false};
-    this._httpClient.post(`${this.route}/task-list`,newValue).subscribe((response)=>{
-      console.log(response);
-
-    });
+    return this._httpClient.post<TaskModel>(`${this.route}/task-list`,newValue);
   }
 
-  update(id:number, model:TaskModel){
-    this._httpClient.put(`${this.route}/${id}`,model);
+  update(id:number, body?:TaskModel):Observable<TaskModel>{
+    return this._httpClient.put<TaskModel>(`${this.route}/task-list/${id}`,body);
   }
 
-  delete(id:number){
-    this._httpClient.delete(`${this.route}/task-list/${id}`);
+  delete(id:number):Observable<TaskModel>{
+    return this._httpClient.delete<TaskModel>(`${this.route}/task-list/${id}`);
   }
 }
